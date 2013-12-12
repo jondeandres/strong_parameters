@@ -22,6 +22,12 @@ class ParametersTaintTest < ActiveSupport::TestCase
     end
   end
 
+  test "fetch doesn't mutates the original object" do
+    value = @params.fetch(:city, { name: 'Barcelona' })
+    assert_equal value, ActionController::Parameters.new(name: 'Barcelona')
+    assert @params[:city].nil?
+  end
+
   test "not permitted is sticky on accessors" do
     assert !@params.slice(:person).permitted?
     assert !@params[:person][:name].permitted?

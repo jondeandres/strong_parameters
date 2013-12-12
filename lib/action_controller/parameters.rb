@@ -43,7 +43,7 @@ module ActionController
 
     def permit!
       each_pair do |key, value|
-        convert_hashes_to_parameters(key, value)
+        convert_hashes_to_parameters!(key, value)
         self[key].permit! if self[key].respond_to? :permit!
       end
 
@@ -75,7 +75,7 @@ module ActionController
     end
 
     def [](key)
-      convert_hashes_to_parameters(key, super)
+      convert_hashes_to_parameters!(key, super)
     end
 
     def fetch(key, *args)
@@ -110,12 +110,20 @@ module ActionController
 
     private
 
-      def convert_hashes_to_parameters(key, value)
+      def convert_hashes_to_parameters!(key, value)
         if value.is_a?(Parameters) || !value.is_a?(Hash)
           value
         else
           # Convert to Parameters on first access
           self[key] = self.class.new(value)
+        end
+      end
+
+      def convert_hashes_to_parameters(key, value)
+        if value.is_a?(Parameters) || !value.is_a?(Hash)
+          value
+        else
+          self.class.new(value)
         end
       end
 
